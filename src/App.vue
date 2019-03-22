@@ -195,7 +195,7 @@ export default {
     }
   },
   created() {
-    this.getAllSettings()
+    // this.getAllSettings()
   }
 }
 </script>

@@ -42,6 +42,7 @@ export default{
         start: payload.start
       })
       .then(response => {
+        console.log(response)
         context.commit('addAppointment', payload)
         context.commit('setLoading', false)
       })
@@ -51,11 +52,25 @@ export default{
       })
     },
 
-    getAllAppointments: (context) => {
+    getAllAppointments: (context, page) => {
+
+      const pageSize = 15;
+      const skip = pageSize * ( page - 1);
+
+      console.log('getAllAppointments');
+      console.log('page: ', page);
+      console.log('skip', skip);
+
       context.commit('setLoading', true)
-      return axios.get("appointments")
+      
+      return axios.get("appointments",{
+        params: {
+          max: pageSize,
+          skip: skip,
+        }
+      })
       .then(response => {
-        context.commit('cleanAppointments')
+        // context.commit('cleanAppointments')
         response.data.forEach( item => {
           context.commit('addAppointment', item)
         })

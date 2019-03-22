@@ -1,42 +1,13 @@
+ /* eslint-disable */
 <template>
-  <!-- <DraggableCal /> -->
-  <v-container fluid style='padding: 0px;' >
-    <v-slide-y-transition mode="out-in">
-
-      <v-layout align-space-around row fill-height>
-
-        <v-flex xs2 style="position:fixed; width: 96px; z-index: 3; overflow: scroll">
-        <v-card>
-          <v-card-text>somethin is here and lets see how it behaves</v-card-text>
-          <div style='height: 1000px; width: 20px;'>
-          <DayPicker/>
-          </div>
-        </v-card>
-      </v-flex>
-
-
-      <!-- -->
-      <v-flex  xs9 offset-xs2 v-loading="appointmentLoading">
-        <!--<div style="width:100%; overflow: scroll; position:fixed; z-index: 1; background: #fafafa">
-          <div style="width: 2000px">
-          <TeamMember /> <TeamMember /> <TeamMember />
-          </div>
-        </div>-->
-        <!-- <v-card dark tile flat color="red lighten-1"> -->
-        <div>  <!-- style="margin-top: 80px;" -->
-            <!-- <v-card-text>Tue 9.Oct 2018</v-card-text> -->
-            <Appointment
-              v-for="(appointmentItem, index) in appointments"
-              v-on:appointment-clicked="showAppointmentDetail"
-              :appointment="appointmentItem"
-              :key="index"/>
-        </div>
-
-      </v-flex>
-      </v-layout>
-    </v-slide-y-transition>
-
-
+  <div v-loading="appointmentLoading">
+    <div class='appointment-list' style='padding-left: 70px;'>
+      <Appointment
+        v-for="(appointmentItem, index) in appointments"
+        v-on:appointment-clicked="showAppointmentDetail"
+        :appointment="appointmentItem"
+        :key="index"/>
+    </div>
 
     <AppointmentForm
       :dialog="dialog"
@@ -46,8 +17,7 @@
       :visible="appointmentDetailVisible"
       :appointment="currentAppointment"
       @close="closeAppointmentDetail"/>
-
-  </v-container>
+  </div>
 </template>
 <script>
 
@@ -69,6 +39,7 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
       dialog: false,
       appointmentDetailVisible: false,
       currentAppointment: {},
@@ -116,8 +87,29 @@ export default {
     },
 
 
+
+
+
+    scroll () {
+    window.onscroll = () => {
+      let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
+
+      if (bottomOfWindow) {
+        console.log('on the bottom');
+        this.currentPage++;
+        this.getAllAppointments(this.currentPage);
+        // axios.get(`https://randomuser.me/api/`)
+        //   .then(response => {
+        //     person.push(response.data.results[0]);
+        //   });
+      }
+    };
+  },
+
+
   },
   created() {
+    this.scroll();
     console.log( this.$route.name )
     if( this.$route.name === "CalendarAppointment"){
 
@@ -130,10 +122,10 @@ export default {
 
     }
     else{
-      this.getAllAppointments()
+      this.getAllAppointments(this.currentPage);
     }
 
-    this.getAllServices()
+    this.getAllServices();
   }
 }
 </script>
